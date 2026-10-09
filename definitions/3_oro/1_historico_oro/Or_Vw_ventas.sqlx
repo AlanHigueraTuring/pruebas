@@ -1,0 +1,36 @@
+config {
+    type: "view",
+    schema: "Astrava_Oro_Ds",
+    tags: ["oro", "view", "ventas"]
+}
+
+SELECT
+  fecha_transaccion,
+  canal_venta,
+  estatus_pago,
+  id_producto,
+  nombre_producto,
+  nombre_categoria,
+  nombre_subcategoria,
+  nombre_pais,
+  nombre_estado,
+  
+  COUNT(DISTINCT id_transaccion) AS total_transacciones,
+  SUM(cantidad_unidades) AS total_unidades_vendidas,
+  SUM((precio_lista_unitario_usd * cantidad_unidades) * (1 - COALESCE(pct_descuento, 0))) AS ingreso_neto_usd,
+  AVG(pct_descuento) AS descuento_promedio,
+  SUM(costo_envio_usd) AS costo_envio_total_usd,
+  MAX(hora_ingesta) AS ultima_ingesta
+
+FROM ${ref("volkswagen-466016", "Astrava_Oro_Ds", "Or_Tb_final")}
+
+GROUP BY
+  fecha_transaccion,
+  canal_venta,
+  estatus_pago,
+  id_producto,
+  nombre_producto,
+  nombre_categoria,
+  nombre_subcategoria,
+  nombre_pais,
+  nombre_estado

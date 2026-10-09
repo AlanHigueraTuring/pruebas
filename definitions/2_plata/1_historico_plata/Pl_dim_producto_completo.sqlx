@@ -1,0 +1,27 @@
+config {
+    type: "table",
+    schema: "Astrava_Plata_Ds",
+    name:"Pl_dim_producto_completo",
+    tags: ["plata", "dim", "control"]
+}
+
+select
+  ${clean.limpiarEspaciosMayus("p.id_producto")} AS id_producto,
+  ${clean.limpiarEspacios("p.nombre_producto")} AS nombre_producto,
+  ${clean.limpiarEspaciosMayus("sc.id_categoria")} AS id_categoria,
+  ${clean.cleanTextMin("c.nombre_categoria")} AS nombre_categoria,
+  ${clean.limpiarEspaciosMayus("p.id_subcategoria")} AS id_subcategoria,
+  ${clean.limpiarEspacios("sc.nombre_subcategoria")} AS nombre_subcategoria,
+  ${helpers.float_convert("p.costo_base_usd")} AS costo_base_usd,
+  ${helpers.float_convert("p.precio_lista_usd")} AS precio_lista_usd,
+  ${clean.limpiarEspaciosMayus("p.estatus_activo")} AS estatus_activo,
+  p.hora_ingesta
+from ${ref("volkswagen-466016", "Astrava_Bronce_Ds", "Tb_Br_dim_productos")} AS p
+
+left join
+    ${ref("volkswagen-466016", "Astrava_Bronce_Ds", "Tb_Br_dim_subcategorias")} as sc
+    ON p.id_subcategoria = sc.id_subcategoria
+
+left join
+    ${ref("volkswagen-466016", "Astrava_Bronce_Ds", "Tb_Br_dim_categorias")} as c
+    ON sc.id_categoria = c.id_categoria

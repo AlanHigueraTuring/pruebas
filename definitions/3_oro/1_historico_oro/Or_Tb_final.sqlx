@@ -1,0 +1,58 @@
+config {
+    type: "table",
+    schema: "Astrava_Oro_Ds",
+    tags: ["oro", "fact"],
+    bigquery:{
+    partitionBy: "fecha_transaccion",
+    clusterBy: ["id_cliente", "id_producto", "canal_venta"]
+    }
+}
+
+
+select
+  v.id_transaccion,
+  v.fecha_transaccion,
+  v.id_cliente,
+  v.id_producto,
+  v.canal_venta,
+  v.cantidad_unidades,
+  v.precio_lista_unitario_usd,
+  v.pct_descuento,
+  v.costo_envio_usd,
+  v.estatus_pago,
+  pr.nombre_producto,
+  pr.id_categoria,
+  pr.nombre_categoria,
+  pr.id_subcategoria,
+  pr.nombre_subcategoria,
+  pr.costo_base_usd,
+  pr.precio_lista_usd,
+  pr.estatus_activo,
+  c.id_tipo_cliente,
+  c.descripcion_tipo,
+  c.id_municipio,
+  c.nombre_razon_social,
+  c.email_contacto,
+  c.fecha_registro,
+  c.nivel_prioridad,
+  geo.id_pais,
+  geo.nombre_pais,
+  geo.codigo_iso,
+  geo.id_estado,
+  geo.nombre_estado,
+  geo.nombre_municipio,
+  v.hora_ingesta
+
+from ${ref("volkswagen-466016", "Astrava_Plata_Ds", "Pl_fact_ventas")} as v
+
+left join
+    ${ref("volkswagen-466016", "Astrava_Plata_Ds", "Pl_dim_producto_completo")} as pr
+    ON v.id_producto = pr.id_producto
+
+left join
+    ${ref("volkswagen-466016", "Astrava_Plata_Ds", "Pl_dim_cliente_completo")} as c
+    ON v.id_cliente = c.id_cliente
+
+left join
+    ${ref("volkswagen-466016", "Astrava_Plata_Ds", "Pl_dim_geo_completo")} AS geo
+    ON c.id_municipio = geo.id_municipio

@@ -1,0 +1,41 @@
+config {
+    type: "view",
+    schema: "Astrava_Oro_Ds",
+    tags: ["oro", "view", "marketing"]
+}
+
+SELECT
+  id_cliente,
+  nombre_razon_social,
+  email_contacto,
+  fecha_registro,
+  canal_venta,
+  id_tipo_cliente,
+  descripcion_tipo,
+  nivel_prioridad,
+  nombre_pais,
+  nombre_estado,
+  nombre_municipio,
+  
+  COUNT(DISTINCT id_transaccion) AS frecuencia_compras,
+  SUM(cantidad_unidades) AS total_unidades_adquiridas,
+  SUM((precio_lista_unitario_usd * cantidad_unidades) * (1 - COALESCE(pct_descuento, 0))) AS valor_total_cliente_usd,
+  SUM(costo_envio_usd) AS costo_envio_acumulado_usd,
+  MIN(fecha_transaccion) AS primera_compra,
+  MAX(fecha_transaccion) AS ultima_compra, 
+  MAX(hora_ingesta) AS ultima_ingesta
+
+from ${ref("volkswagen-466016", "Astrava_Oro_Ds", "Or_Tb_final")}
+
+GROUP BY
+  id_cliente,
+  nombre_razon_social,
+  email_contacto,
+  fecha_registro,
+  canal_venta,
+  id_tipo_cliente,
+  descripcion_tipo,
+  nivel_prioridad,
+  nombre_pais,
+  nombre_estado,
+  nombre_municipio

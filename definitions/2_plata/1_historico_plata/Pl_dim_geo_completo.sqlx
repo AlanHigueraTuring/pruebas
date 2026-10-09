@@ -1,0 +1,25 @@
+config {
+    type: "table",
+    schema: "Astrava_Plata_Ds",
+    name:"Pl_dim_geo_completo",
+    tags: ["plata", "dim", "control"]
+}
+
+select
+  ${clean.limpiarEspaciosMayus('ge.id_pais')} AS id_pais,
+  ${clean.cleanTextMayus('gp.nombre_pais')} AS nombre_pais,
+  ${clean.limpiarEspacios('gp.codigo_iso')} AS codigo_iso,
+  ${clean.limpiarEspaciosMayus('gm.id_estado')} AS id_estado,
+  ${clean.cleanTextMayus('ge.nombre_estado')} AS nombre_estado,
+  ${clean.limpiarEspaciosMayus('gm.id_municipio')} AS id_municipio,
+  ${clean.cleanTextMayus('gm.nombre_municipio')} AS nombre_municipio,
+  gm.hora_ingesta
+from ${ref("volkswagen-466016", "Astrava_Bronce_Ds", "Tb_Br_dim_geografia_municipio")} AS gm
+
+left join
+    ${ref("volkswagen-466016", "Astrava_Bronce_Ds", "Tb_Br_dim_geografia_estado")} as ge
+    ON gm.id_estado = ge.id_estado
+
+left join
+    ${ref("volkswagen-466016", "Astrava_Bronce_Ds", "Tb_Br_dim_geografia_pais")} as gp
+    ON ge.id_pais = gp.id_pais

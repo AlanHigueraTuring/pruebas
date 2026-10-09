@@ -1,0 +1,23 @@
+config {
+    type: "table",
+    schema: "Astrava_Plata_Ds",
+    name:"Pl_dim_cliente_completo",
+    tags: ["plata", "dim", "control"]
+}
+
+select
+  ${clean.limpiarEspaciosMayus('c.id_cliente')} AS id_cliente,
+  ${clean.limpiarEspaciosMayus('c.id_tipo_cliente')} AS id_tipo_cliente,
+  ${clean.limpiarEspacios('tc.descripcion_tipo')} AS descripcion_tipo,
+  ${clean.limpiarEspaciosMayus('c.id_municipio')} AS id_municipio,
+  ${clean.cleanTextMayus('c.nombre_razon_social')} AS nombre_razon_social,
+  ${helpers.desconocido('c.email_contacto')} AS email_contacto,
+  ${helpers.date_convert('c.fecha_registro')} AS fecha_registro,
+  ${clean.limpiarEspaciosMayus('tc.nivel_prioridad')} AS nivel_prioridad,
+  c.hora_ingesta
+from ${ref("volkswagen-466016", "Astrava_Bronce_Ds", "Tb_Br_dim_clientes")} AS c
+
+left join
+    ${ref("volkswagen-466016", "Astrava_Bronce_Ds", "Tb_Br_dim_tipo_cliente")} as tc
+    ON c.id_tipo_cliente = tc.id_tipo_cliente
+

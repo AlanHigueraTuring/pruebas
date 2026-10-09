@@ -1,0 +1,19 @@
+config {
+    type: "table",
+    schema: "Astrava_Plata_Ds",
+    tags: ["plata", "fact"]
+}
+
+select
+  ${clean.limpiarEspaciosMayus('id_transaccion')} AS id_transaccion,
+  ${helpers.date_convert('fecha_transaccion')} AS fecha_transaccion,
+  ${clean.limpiarEspaciosMayus('id_cliente')} AS id_cliente,
+  ${clean.limpiarEspaciosMayus('id_producto')} AS id_producto,
+  ${clean.limpiarEspacios('canal_venta')} AS canal_venta,
+  ${helpers.int_convert('cantidad_unidades')} AS cantidad_unidades,
+  ${helpers.float_convert('precio_lista_unitario_usd')} AS precio_lista_unitario_usd,
+  ${helpers.float_convert('pct_descuento')} AS pct_descuento,
+  ${helpers.float_convert('costo_envio_usd')} AS costo_envio_usd,
+  ${clean.nullTextMayus('estatus_pago')} AS estatus_pago,
+  hora_ingesta 
+from ${ref("volkswagen-466016", "Astrava_Bronce_Ds", "Tb_Br_fact_ventas")}
